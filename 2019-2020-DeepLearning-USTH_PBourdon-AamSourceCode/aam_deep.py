@@ -120,7 +120,7 @@ class AamDeepModel(AamModelBase):
         shape_data_scaled = self._shape_scaler.fit_transform(shape_data)
 
         input_dim = shape_data_scaled.shape[1]
-        self._shape_encoder, self._shape_decoder = self._createEncoderLinear(input_dim=input_dim, code_size=self._n_components_shape)
+        self._shape_encoder, self._shape_decoder = self._createEncoderSingleLayer(input_dim=input_dim, code_size=self._n_components_shape)
         inp = keras.layers.Input(shape=(input_dim,))
         self._shape_autoencoder = keras.models.Model(inp, self._shape_decoder(self._shape_encoder(inp)))
         self._shape_autoencoder.compile(loss='mse', optimizer='adam')

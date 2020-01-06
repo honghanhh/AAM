@@ -41,7 +41,7 @@ def main(argv):
     for subject_dir in os.scandir(img_dir):
         for emotion_dir in os.scandir(subject_dir.path):
             if os.path.isdir(emotion_dir.path):
-                search_pattern = os.path.join(emotion_dir.path, 'S[0-9][0-9][0-9]_[0-9][0-9][0-9]_[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9].png')
+                search_pattern = os.path.join(emotion_dir.path,'S[0-9][0-9][0-9]_[0-9][0-9][0-9]_[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9].png')
                 files = sorted(glob.glob(search_pattern))
                 selected_files = np.array(files)[[0,-1]]    # selecting extreme poses
                 for k, img_path in enumerate(selected_files):
