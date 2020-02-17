@@ -38,6 +38,7 @@ def main(argv):
     model.testReconstruction(n, 3, None)
     model.testReconstruction(n, None, 3)
     model.testReconstruction(n, 3, 3)
+    plt.show()
 
 
 if __name__ == '__main__':

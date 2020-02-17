@@ -169,7 +169,7 @@ if __name__ == '__main__':
     
     parser = argparse.ArgumentParser(description='AAM model viewer')
     parser.add_argument('input_model', help='input AAM model file')
-    parser.add_argument('--is_deep', nargs='?', const=False, default=True, help='AAM model is a deep model')
+    parser.add_argument('--is_deep', nargs='?', const=True, default=False, help='AAM model is a deep model')
 
     if len(sys.argv)==1:
         parser.print_help(sys.stderr)

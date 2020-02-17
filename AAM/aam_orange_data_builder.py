@@ -45,7 +45,7 @@ def main(argv):
     parser = argparse.ArgumentParser(description='Build learning data file from AAM model for Orange data mining')
     parser.add_argument('in_model', help='input AAM model')
     parser.add_argument('out_datafile', help='output .tab data file')
-    parser.add_argument('--is_deep', nargs='?', const=False, default=True, help='AAM model is a deep model')
+    parser.add_argument('--is_deep', nargs='?', const=True, default=False, help='AAM model is a deep model')
 
     if len(sys.argv)==1:
         parser.print_help(sys.stderr)

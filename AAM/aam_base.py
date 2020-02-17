@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+    # -*- coding: utf-8 -*-
 
 """ Active Appearance Model (AAM). Base abstract class model """
 
@@ -137,6 +137,7 @@ class AamModelBase(ShapeList):
 
     def textureDataVecToParams(self, texture_data):
         raise NotImplementedError
+       
 
     def textureParamsToTexture(self, lambd_params, dst):
         raise NotImplementedError

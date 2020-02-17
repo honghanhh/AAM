@@ -16,6 +16,7 @@ import skimage.transform
 import sklearn
 import matplotlib.pyplot as plt
 import pickle
+import joblib
 
 from procrustes import *
 from shape import *
@@ -43,13 +44,13 @@ class ShapeList(list):
             filename = self.filename
         else:
             self.filename = filename
-        sklearn.externals.joblib.dump(self, filename, compress=compress)
+        joblib.dump(self, filename, compress=compress)
     
     @classmethod
     def load(cls, filename):
         """Load instance from file"""
         print('... loading {filename}'.format(filename=os.path.abspath(filename)))
-        obj = sklearn.externals.joblib.load(filename)
+        obj = joblib.load(filename)
         assert not isinstance(obj, cls.__class__), '{objclass} object is not an instance of {classname}'.format(objclass=obj.__class__.__name__, classname=cls.__name__)
         print('... found {num_shapes} shapes'.format(num_shapes=len(obj)))
         obj.filename = os.path.abspath(filename)

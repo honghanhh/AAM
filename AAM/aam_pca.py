@@ -32,6 +32,15 @@ class AamModel(AamModelBase):
         self.pca_shape.fit(shape_data)
 
         print('AAM PCA shape model: found {} components'.format(self.getNumShapeParams()))
+        
+    def _buildTextureModel(self):
+        """Overload. Perform Principal Component Analysis on texture data"""
+        print('... performing PCA texture analysis on {num_texture} textures'.format(num_texture=len(self)))
+
+        texture_data = self._retrieveTextureDataVector()
+        self.pca_texture.fit(texture_data)
+
+        print('AAM PCA texture model: found {} components'.format(self.getNumTextureParams()))        
 
     def shapeDataVecToParams(self, shape_data):
         return self.pca_shape.transform(shape_data.reshape(1,-1)).flatten()
@@ -46,6 +55,15 @@ class AamModel(AamModelBase):
             dst = np.zeros(self.a0_mask.shape)
         dst[self.a0_mask] = self.pca_texture.inverse_transform(lambd_params).reshape(-1,)
         return dst
+    
+    def getNumShapeParams(self):
+        return len(self.pca_shape.components_)
+    
+    def getNumTextureParams(self):
+        return len(self.pca_texture.components_)
+    
+    def textureDataVecToParams(self, texture_data):
+        return self.pca_texture.transform(texture_data.reshape(1,-1)).flatten()
 
     def getMeanShape(self, map_to_a0=False):
         if map_to_a0:

@@ -26,7 +26,7 @@ import keras.models
 
 from aam_base import *
 
-assert keras.__version__[:3]=='2.1', 'at this time model serialization requires downgrading to Keras 2.1'
+#assert keras.__version__[:3]=='2.1', 'at this time model serialization requires downgrading to Keras 2.1'
 def make_keras_picklable():
     def __getstate__(self):
         model_str = ""
@@ -108,6 +108,28 @@ class AamDeepModel(AamModelBase):
         print(autoencoder.summary())
 
         return autoencoder, encoder, decoder
+    
+    def _buildTextureModel(self):
+        """Perform autoencoding on texture data"""
+        print('... performing auto-encoder texture analysis on {num_textures} textures'.format(num_textures=len(self)))
+        
+        assert type(self._n_components_texture) is int, 'n_components_texture type mismatch : found {}, should be int'.format(type(self._n_components_texture))
+
+        texture_data = self._retrieveTextureDataVector()
+        self._texture_scaler = sklearn.preprocessing.MinMaxScaler()
+        texture_data_scaled = self._texture_scaler.fit_transform(texture_data)
+
+        input_dim = texture_data_scaled.shape[1]
+        self._texture_encoder, self._texture_decoder = self._createEncoderSingleLayer(input_dim=input_dim, code_size=self._n_components_texture)
+        inp = keras.layers.Input(shape=(input_dim,))
+        self._texture_autoencoder = keras.models.Model(inp, self._texture_decoder(self._texture_encoder(inp)))
+        self._texture_autoencoder.compile(loss='mse', optimizer='adam')
+
+        self._texture_autoencoder.fit(texture_data_scaled, texture_data_scaled,\
+                                    batch_size=self._texture_batch_size, epochs=self._texture_epochs,\
+                                    shuffle=True, verbose=1, validation_split=0.3)
+
+        print(self._texture_autoencoder.summary())
 
     def _buildShapeModel(self):
         """Perform autoencoding on shape data"""
@@ -153,19 +175,19 @@ class AamDeepModel(AamModelBase):
         self._a0_mask_patch = cv2.resize(255*self.a0_mask.astype(np.uint8), dsize=(w, h), interpolation=cv2.INTER_CUBIC)
         self._a0_mask_patch = (self._a0_mask_patch > 128).astype(np.bool)
 
-    def _retrieveTextureDataVector(self):
-        """Overload. Quit using individual retrieveTextureData() method for performance improval?"""
+    # def _retrieveTextureDataVector(self):
+    #     """Overload. Quit using individual retrieveTextureData() method for performance improval?"""
 
-        texture_data = []
-        for idx in range(len(self)):
-            texture_data.append(self.retrieveTextureData(idx))
+    #     texture_data = []
+    #     for idx in range(len(self)):
+    #         texture_data.append(self.retrieveTextureData(idx))
 
-        texture_data = np.array(texture_data)
-        if len(texture_data.shape)<4:   # adjust ndim for scalar/grayscale images
-            texture_data = texture_data.reshape(texture_data.shape+(1,))
-        assert 0<=texture_data.min() and texture_data.max()<=1.0, 'texture data should be normalized'
+    #     texture_data = np.array(texture_data)
+    #     if len(texture_data.shape)<4:   # adjust ndim for scalar/grayscale images
+    #         texture_data = texture_data.reshape(texture_data.shape+(1,))
+    #     assert 0<=texture_data.min() and texture_data.max()<=1.0, 'texture data should be normalized'
 
-        return texture_data
+    #     return texture_data
 
     def _testTextureModel(self):
         texture_data = self._retrieveTextureDataVector()
